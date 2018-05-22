@@ -44,23 +44,34 @@ class UserController extends Yaf_Controller_Abstract
         dd($value);
     }
 
-    public function ptalkAction(){
-        $pheanstalk = new \Pheanstalk\Pheanstalk('127.0.0.1');
+    public function productAction(){
+        $pheanstalk = new \Pheanstalk\Pheanstalk('127.0.0.1','11300');
+        $arr = [
+            'test'=>'a2255',
+            'hi'=>'b22255'
+        ];
+        // ----------------------------------------
+        // producer (queues jobs)
         $pheanstalk
-            ->useTube('testtube')
-            ->put("job payload goes here\n");
+            ->useTube('first')
+            ->put(json_encode($arr));
+        dd($arr);
+    }
 
-// ----------------------------------------
-// worker (performs jobs)
-
+    public function workerAction(){
+        $pheanstalk = new \Pheanstalk\Pheanstalk('127.0.0.1','11300');
+        // ----------------------------------------
+        // worker (performs jobs)
         $job = $pheanstalk
-            ->watch('testtube')
+            ->watch('first')
             ->ignore('default')
             ->reserve();
 
         echo $job->getData();
-        //$pheanstalk->delete($job);
-        $pheanstalk->getConnection()->isServiceListening();
+        $pheanstalk->delete($job);
+        // ----------------------------------------
+        // check server availability
+        //$pheanstalk->getConnection()->isServiceListening();
         die;
     }
 }
