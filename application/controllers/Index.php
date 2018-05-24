@@ -10,6 +10,7 @@ class IndexController extends Yaf_Controller_Abstract
 {
     public function indexAction(){
         //$this->getView()->assign("content","hello Yaf");
+        Yaf_Dispatcher::getInstance()->disableView();
         echo BladeView::view('index.index',['content'=>'hello Yaf']);
     }
 

@@ -19,9 +19,15 @@ class UserController extends Yaf_Controller_Abstract
     }
 
     public function testAction(){
-
+        //Yaf_Dispatcher::getInstance()->disableView();
         echo BladeView::view('user.test',['name'=>'john1']);
 
+    }
+
+    public function smartyAction(){
+
+        $smarty = new SmartyView();
+        $smarty->display('smarty.tpl');
     }
 
     /**

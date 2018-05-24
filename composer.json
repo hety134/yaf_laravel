@@ -11,6 +11,7 @@
     "illuminate/events": "5.1.*",
     "symfony/debug": "2.6.*",
     "symfony/var-dumper": "2.6.*",
+    "symfony/console": "2.7.*",
     "monolog/monolog": "~1.11",
     "jenssegers/blade": "^1.1",
     "guzzlehttp/guzzle": "^6.2",
