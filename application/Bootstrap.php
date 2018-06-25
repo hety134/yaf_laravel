@@ -22,11 +22,27 @@ class Bootstrap extends Yaf_Bootstrap_Abstract
     }
 
     /**
+     * [加载 命名空间 加载local library components文件]
+     * @return [type] [description]
+     */
+    public function _initRegisterLocalNamespace()
+    {
+        $loader = Yaf_Loader::getInstance();
+        $loader->registerLocalNamespace(
+            array('Controller','Helper')
+        );
+    }
+
+    /**
      * 加载vendor下的文件
      */
     public function _initLoader()
     {
+        set_error_handler([$this, "onError"]);
+        register_shutdown_function(array($this, 'cleanup'));
+
         Yaf_Loader::import(APP_PATH . '/vendor/autoload.php');
+        Yaf_Loader::import(APP_PATH . "/application/function.php");
     }
 
     /**
@@ -79,7 +95,37 @@ class Bootstrap extends Yaf_Bootstrap_Abstract
             error_reporting(0);
             ini_set('display_errors', 'Off');
         }
-        set_error_handler(['Error', 'errorHandler']);
+        //set_error_handler(['Error', 'errorHandler']);
+    }
+
+    public function onError($severity, $message, $file, $line) {
+        throw new ErrorException($message, $severity, $severity, $file, $line);
+    }
+
+    public function cleanup()
+    {
+        restore_error_handler();
+
+        // 捕获fatal error
+        $e = error_get_last();
+        if ($e['type'] == E_ERROR) {
+            $str = <<<TYPEOTHER
+[message] {$e['message']}
+[file] {$e['file']}
+[line] {$e['line']}
+TYPEOTHER;
+            // todo 发送邮件、短信、写日志报警……
+        }
+
+        // 定义了开关，便关闭log
+        if (!defined('SHUTDOWN')) {
+
+            if($e['type'] == E_ERROR){
+                $log = new Logs();
+                $log->error( var_export($_REQUEST, true).$str);
+            }
+        }
+
     }
 
     /**

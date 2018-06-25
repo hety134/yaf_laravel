@@ -13,7 +13,7 @@ class UserController extends Yaf_Controller_Abstract
 
         //$msg = DB::table('users')->get();
         $msg = UsersModel::all();
-        dd($msg);
+        //dd($msg);
         $log = new Logs();
         $log->alert('test');
     }
