@@ -10,12 +10,13 @@
 class UserController extends Yaf_Controller_Abstract
 {
     public function showAction(){
-
-        //$msg = DB::table('users')->get();
-        $msg = UsersModel::all();
+        DB::connection()->enableQueryLog();
+        $msg = DB::table('users')->get();
+        //$msg = UsersModel::all();
         //dd($msg);
-        $log = new Logs();
-        $log->alert('test');
+        $log = DB::getQueryLog();
+        $loger = new Logs();
+        $loger->info("query log",['log'=>$log]);   //打印sql语句
     }
 
     public function testAction(){

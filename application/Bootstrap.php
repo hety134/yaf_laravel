@@ -1,4 +1,5 @@
 <?php
+use \Illuminate\Database\Capsule\Manager as Capsule;
 
 /**
  * Created by PhpStorm.
@@ -29,7 +30,7 @@ class Bootstrap extends Yaf_Bootstrap_Abstract
     {
         $loader = Yaf_Loader::getInstance();
         $loader->registerLocalNamespace(
-            array('Controller','Helper')
+            array('Controller', 'Helper')
         );
     }
 
@@ -62,6 +63,7 @@ class Bootstrap extends Yaf_Bootstrap_Abstract
         //开启Eloquent ORM
         $capsule->bootEloquent();
         class_alias('\Illuminate\Database\Capsule\Manager', 'DB');
+
     }
 
     public function _initRoute(Yaf_Dispatcher $dispatcher)
@@ -98,12 +100,14 @@ class Bootstrap extends Yaf_Bootstrap_Abstract
         //set_error_handler(['Error', 'errorHandler']);
     }
 
-    public function onError($severity, $message, $file, $line) {
+    public function onError($severity, $message, $file, $line)
+    {
         throw new ErrorException($message, $severity, $severity, $file, $line);
     }
 
     public function cleanup()
     {
+
         restore_error_handler();
 
         // 捕获fatal error
@@ -119,11 +123,20 @@ TYPEOTHER;
 
         // 定义了开关，便关闭log
         if (!defined('SHUTDOWN')) {
+            $log = new Logs();
 
-            if($e['type'] == E_ERROR){
-                $log = new Logs();
-                $log->error( var_export($_REQUEST, true).$str);
+            if ($e['type'] == E_ERROR) {
+                $log->info('receive:' . var_export($_REQUEST, true) . $str);
             }
+
+            // DEFAULT
+            if(defined('DEFAULT')){
+                $log->info("query log",Capsule::getQueryLog());
+            }
+
+            // 业务库相关SQL
+            if (defined('ANOTHER'))
+                $log->info("another query log",Capsule::connection(ANOTHER)->getQueryLog());
         }
 
     }
